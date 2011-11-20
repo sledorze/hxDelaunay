@@ -29,7 +29,7 @@ class Kruskal {
 			var lineSegment = lineSegments[index];
 			index--;
 			
-			var node0:Node = nodes[cast lineSegment.p0];
+			var node0:Node = nodes.get(lineSegment.p0);
 			var rootOfSet0:Node;
 			if (node0 == null)
 			{
@@ -38,14 +38,14 @@ class Kruskal {
 				rootOfSet0 = node0.parent = node0;
 				node0.treeSize = 1;
 			
-				nodes[cast lineSegment.p0] = node0;
+				nodes.set(lineSegment.p0, node0);
 			}
 			else
 			{
 				rootOfSet0 = find(node0);
 			}
 			
-			var node1:Node = nodes[cast lineSegment.p1];
+			var node1:Node = nodes.get(lineSegment.p1);
 			var rootOfSet1:Node;
 			if (node1 == null)
 			{
@@ -54,7 +54,7 @@ class Kruskal {
 				rootOfSet1 = node1.parent = node1;
 				node1.treeSize = 1;
 			
-				nodes[cast lineSegment.p1] = node1;
+				nodes.set(lineSegment.p1, node1);
 			}
 			else
 			{
@@ -83,8 +83,8 @@ class Kruskal {
 			}
 		}
 		
-		for (node in nodes) {
-			nodePool.push(node);
+		for (key in nodes) {
+			nodePool.push(nodes.get(key));
 		}
 		
 		return mst;
