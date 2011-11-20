@@ -32,7 +32,7 @@ using com.mindrocks.delaunay.VectorHelper;
 
 @:final class Voronoi {
 	private var _sites:SiteList;
-	private var _sitesIndexedByLocation:Dictionary;
+	private var _sitesIndexedByLocation:flash.utils.TypedDictionary<Point, Site>;
 	private var _triangles:Vector<Triangle>;
 	private var _edges:Vector<Edge>;
 
@@ -79,7 +79,7 @@ using com.mindrocks.delaunay.VectorHelper;
 	public function new(points:Vector<Point>, colors:Vector<Int>, plotBounds:Rectangle)
 	{
 		_sites = new SiteList();
-		_sitesIndexedByLocation = new Dictionary(true);
+		_sitesIndexedByLocation = new flash.utils.TypedDictionary(true);
 		addSites(points, colors);
 		_plotBounds = plotBounds;
 		_triangles = new Vector<Triangle>();
@@ -90,8 +90,7 @@ using com.mindrocks.delaunay.VectorHelper;
 	private function addSites(points:Vector<Point>, colors:Vector<Int>):Void
 	{
 		var length:Int = points.length;
-		for (i in 0 ... length)
-		{
+		for (i in 0 ... length) {
 			addSite(points[i], colors!=null ? colors[i] : 0, i);
 		}
 	}
@@ -101,12 +100,12 @@ using com.mindrocks.delaunay.VectorHelper;
 		var weight:Float = Math.random() * 100;
 		var site:Site = Site.create(p, index, weight, color);
 		_sites.push(site);
-		_sitesIndexedByLocation[cast p] = site;
+		_sitesIndexedByLocation.set(p, site);
 	}
 	
 	public function region(p:Point):Vector<Point>
 	{
-		var site:Site = _sitesIndexedByLocation[cast p];
+		var site:Site = _sitesIndexedByLocation.get(p);
 		if (site == null)
 		{
 			return new Vector<Point>();
@@ -117,7 +116,7 @@ using com.mindrocks.delaunay.VectorHelper;
 	public function neighborSitesForSite(coord:Point):Vector<Point>
 	{
 		var points:Vector<Point> = new Vector<Point>();
-		var site:Site = _sitesIndexedByLocation[cast coord];
+		var site:Site = _sitesIndexedByLocation.get(coord);
 		if (site == null)
 		{
 			return points;
@@ -305,10 +304,14 @@ using com.mindrocks.delaunay.VectorHelper;
 				var vertex = Vertex.intersect(lbnd, bisector);
 				if (vertex != null)  {
 					heap.remove(lbnd);
-
+          
 					vertices.push(vertex);
 					lbnd.vertex = vertex;
-					lbnd.ystar = vertex.y + newSite.dist(vertex);
+          
+          var d = newSite.dist(vertex);
+          var yy = vertex.y;
+
+					lbnd.ystar = yy + d;
 					heap.insert(lbnd);
 				}
 				

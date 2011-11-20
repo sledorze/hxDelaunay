@@ -12,6 +12,8 @@ import flash.Vector;
 	{
 		if (Math.isNaN(x) || Math.isNaN(y))
 		{
+//      if (VERTEX_AT_INFINITY._coord)
+//      trace("infinity " + VERTEX_AT_INFINITY._coord);
 			return VERTEX_AT_INFINITY;
 		}
 		if (_pool.length > 0)
@@ -50,8 +52,10 @@ import flash.Vector;
 	}
 	
 	inline public function dispose():Void {
-		_coord = null;
-		_pool.push(this);
+    if (this != VERTEX_AT_INFINITY) {
+      _coord = null;
+      _pool.push(this);
+    }
 	}
 	
 	inline public function setIndex():Void {

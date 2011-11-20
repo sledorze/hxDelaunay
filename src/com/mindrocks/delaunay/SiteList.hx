@@ -133,10 +133,12 @@ import flash.Vector;
 	{
 		var circles = new Vector<Circle>();
 		for (site in _sites) {
-			var nearestEdge = site.nearestEdge();
-			
-			var radius = (!nearestEdge.isPartOfConvexHull())? (nearestEdge.sitesDistance() * 0.5): 0;
-			circles.push(new Circle(site.x, site.y, radius));
+      if (site.edges.length > 0) {
+        var nearestEdge = site.nearestEdge();
+        
+        var radius = (!nearestEdge.isPartOfConvexHull())? (nearestEdge.sitesDistance() * 0.5): 0;
+        circles.push(new Circle(site.x, site.y, radius));        
+      }
 		}
 		return circles;
 	}

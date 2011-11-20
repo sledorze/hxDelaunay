@@ -414,6 +414,12 @@ import flash.Vector;
 	
 	inline public function dist(p:ICoord)
 	{
+    if (p.coord == null) {
+      trace("yeargla");
+    }
+    if (this.coord == null) {
+      trace("pas yeargla");
+    }
 		return Point.distance(p.coord, this._coord);
 	}
 
