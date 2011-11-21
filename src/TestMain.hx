@@ -15,12 +15,12 @@ import haxe.Timer;
 
 import de.polygonal.motor.geom.tri.DelaunayTriangulation;
  
-class Main extends Sprite {
+class TestMain extends Sprite {
 	var voro : Voronoi;
   
 	static function main() 
 	{
-		new Main();
+		new TestMain();
 	}
 	function new() {
     super();
@@ -34,8 +34,15 @@ class Main extends Sprite {
       for (i in 0...nbPoints) {
         points.push(new Point(Std.random(400), Std.random(400)));
       }
+      points.push(new Point(Std.random(400), 100));
+      points.push(new Point(Std.random(400), 100));
+      points.push(new Point(Std.random(400), 100));
       points.sort(function (a, b) return Std.int(a.x - b.x));
 
+      
+      this.graphics.lineStyle(1);
+      this.graphics.beginFill(0xff0000);
+      
       var pts = [];
       var destTris = [];
       for (pt in points) {
@@ -53,10 +60,7 @@ class Main extends Sprite {
         destTris.push(0);
         destTris.push(0);
       }
-      
-      this.graphics.lineStyle(1);
-      this.graphics.beginFill(0xff0000);
-      
+
       var nbTris;
         nbTris = DelaunayTriangulation.triangulate(pts, destTris);
       Timer.measure(function () {
