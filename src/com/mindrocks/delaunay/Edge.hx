@@ -222,6 +222,7 @@ import flash.Vector;
 	public var _edgeIndex:Int;
 	
 	public function dispose():Void {
+    
 		if (_delaunayLineBmp != null)
 		{
 			_delaunayLineBmp.dispose();

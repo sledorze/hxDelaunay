@@ -95,9 +95,9 @@ using com.mindrocks.delaunay.VectorHelper;
 		}
 	}
 	
-	private function addSite(p:Point, color:Int, index:Int):Void
+	inline private function addSite(p:Point, color:Int, index:Int):Void
 	{
-		var weight:Float = Math.random() * 100;
+		var weight:Float = 10; // Math.random() * 100;
 		var site:Site = Site.create(p, index, weight, color);
 		_sites.push(site);
 		_sitesIndexedByLocation.set(p, site);
@@ -106,11 +106,7 @@ using com.mindrocks.delaunay.VectorHelper;
 	public function region(p:Point):Vector<Point>
 	{
 		var site:Site = _sitesIndexedByLocation.get(p);
-		if (site == null)
-		{
-			return new Vector<Point>();
-		}
-		return site.region(_plotBounds);
+    return (site == null)? new Vector<Point>() : site.region(_plotBounds);
 	}
 	
 	public function neighborSitesForSite(coord:Point):Vector<Point>
@@ -122,7 +118,6 @@ using com.mindrocks.delaunay.VectorHelper;
 			return points;
 		}
 		var sites:Vector<Site> = site.neighborSites();
-		var neighbor:Site;
 		for (neighbor in sites)
 		{
 			points.push(neighbor.coord);
@@ -235,6 +230,16 @@ using com.mindrocks.delaunay.VectorHelper;
 	inline public function siteCoords():Vector<Point> {
 		return _sites.siteCoords();
 	}
+  
+  inline static function leftRegion(he:Halfedge, bottomMostSite : Site):Site {
+    var edge:Edge = he.edge;
+    return (edge == null)? bottomMostSite : edge.site(he.leftRight);
+  }
+  
+  inline static function rightRegion(he:Halfedge, bottomMostSite : Site):Site {
+    var edge:Edge = he.edge;
+    return (edge == null)? bottomMostSite : edge.site(LR.other(he.leftRight));
+  }
 
 	private function fortunesAlgorithm():Void {
 		
@@ -251,23 +256,6 @@ using com.mindrocks.delaunay.VectorHelper;
 		
 		var bottomMostSite:Site = _sites.next();
 		
-		var leftRegion = function(he:Halfedge):Site {
-			var edge:Edge = he.edge;
-			if (edge == null)
-			{
-				return bottomMostSite;
-			}
-			return edge.site(he.leftRight);
-		}
-		
-		var rightRegion = function(he:Halfedge):Site {
-			var edge:Edge = he.edge;
-			if (edge == null)
-			{
-				return bottomMostSite;
-			}
-			return edge.site(LR.other(he.leftRight));
-		}
 		
 		newSite = _sites.next();
 		
@@ -285,7 +273,7 @@ using com.mindrocks.delaunay.VectorHelper;
 				// Step 8:
 				var lbnd = edgeList.edgeListLeftNeighbor(newSite.coord);	// the Halfedge just to the left of newSite
 				var rbnd = lbnd.edgeListRightNeighbor;		// the Halfedge just to the right
-				var bottomSite = rightRegion(lbnd);		// this is the same as leftRegion(rbnd)
+				var bottomSite = rightRegion(lbnd, bottomMostSite);		// this is the same as leftRegion(rbnd)
 				// this Site determines the region containing the new site
 				//trace("new Site is in region of existing site: " + bottomSite);
 				
@@ -308,10 +296,7 @@ using com.mindrocks.delaunay.VectorHelper;
 					vertices.push(vertex);
 					lbnd.vertex = vertex;
           
-          var d = newSite.dist(vertex);
-          var yy = vertex.y;
-
-					lbnd.ystar = yy + d;
+					lbnd.ystar = vertex.y + newSite.dist(vertex);
 					heap.insert(lbnd);
 				}
 				
@@ -339,8 +324,8 @@ using com.mindrocks.delaunay.VectorHelper;
 				var llbnd = lbnd.edgeListLeftNeighbor;
 				var rbnd = lbnd.edgeListRightNeighbor;
 				var rrbnd = rbnd.edgeListRightNeighbor;
-				var bottomSite = leftRegion(lbnd);
-				var topSite = rightRegion(rbnd);
+				var bottomSite = leftRegion(lbnd, bottomMostSite);
+				var topSite = rightRegion(rbnd, bottomMostSite);
 				// these three sites define a Delaunay triangle
 				// (not actually using these for anything...)
 				//_triangles.push(new Triangle(bottomSite, topSite, rightRegion(lbnd)));
@@ -417,19 +402,22 @@ using com.mindrocks.delaunay.VectorHelper;
 		return (s1.y < s2.y) || (s1.y == s2.y && s1.x < s2.x);
 	}
 	
-	public static function compareByYThenX(s1:Site, s2:Site):Int {
+	inline public static function compareByYThenX(s1:Site, s2:Site):Int {
+//    var res = 0;
 /*
 		return 
 			(s1.y < s2.y)? -1 :(
 			(s1.y > s2.y)? 1:(
 			(s1.x < s2.x)? -1:(
 			(s1.x > s2.x)? 1: 0)));
-	*/		
-		if (s1.y < s2.y) return -1;
-		if (s1.y > s2.y) return 1;
-		if (s1.x < s2.x) return -1;
-		if (s1.x > s2.x) return 1;
-		return 0;
+	*/
+      
+    return (s1.y < s2.y)? -1 : (s1.y > s2.y) ? 1 : (s1.x < s2.x) ? -1 : (s1.x > s2.x) ? 1 : 0;
+/*		if  return -1;
+		if  return 1;
+		if  return -1;
+		if  return 1;
+		return res;*/
 	}
 
 }

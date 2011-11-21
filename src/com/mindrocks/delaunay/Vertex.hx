@@ -10,10 +10,9 @@ import flash.Vector;
 	private static var _pool:Vector<Vertex> = new Vector<Vertex>();
 	private static function create(x:Float, y:Float):Vertex
 	{
-		if (Math.isNaN(x) || Math.isNaN(y))
+    var a = x+y;
+		if (a == (a + 1)) // Math.isNaN(x) || Math.isNaN(y)
 		{
-//      if (VERTEX_AT_INFINITY._coord)
-//      trace("infinity " + VERTEX_AT_INFINITY._coord);
 			return VERTEX_AT_INFINITY;
 		}
 		if (_pool.length > 0)
@@ -36,7 +35,7 @@ import flash.Vector;
 	}
 	private var _vertexIndex:Int;
 	public var vertexIndex(get_vertexIndex, null):Int;
-	public function get_vertexIndex():Int
+	inline public function get_vertexIndex():Int
 	{
 		return _vertexIndex;
 	}

@@ -26,6 +26,7 @@ import flash.Vector;
 	
 	public function dispose():Void
 	{
+    
 		var halfEdge:Halfedge = _leftEnd;
 		var prevHe:Halfedge;
 		while (halfEdge != _rightEnd)
